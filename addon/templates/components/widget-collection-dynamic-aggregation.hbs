@@ -48,6 +48,7 @@
                 </div>
             </div>
 
+            {{#if displayYForm}}
             <div class="form-group">
                 <label for="yProperty" class="col-sm-2 control-label">
                     y axis
@@ -70,7 +71,9 @@
 
                 </div>
             </div>
+            {{/if}}
 
+            {{#if displayColorForm}}
             <div class="form-group">
                 <label for="colorProperty" class="col-sm-2 control-label">
                     color
@@ -82,7 +85,9 @@
                         value=colorProperty}}
                 </div>
             </div>
+            {{/if}}
 
+            {{#if displaySortForm}}
             <div class="form-group">
                 <label for="sortReversed" class="col-sm-2 control-label">
                     sort on
@@ -103,7 +108,9 @@
                     </div>
                 </div>
             </div>
+            {{/if}}
 
+            {{#if displayLimitForm}}
             <div class="form-group">
                 <label for="limit" class="col-sm-2 control-label">
                     limit
@@ -115,6 +122,7 @@
                         value=limit}}
                 </div>
             </div>
+            {{/if}}
 
             <button class="btn btn-primary" {{action 'reload'}}> submit </button>
         </form>

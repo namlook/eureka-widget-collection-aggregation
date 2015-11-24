@@ -10,6 +10,10 @@ export default CollectionWidget.extend({
     options: Ember.computed.alias('config.options'),
 
     displayType : Ember.computed.alias('config.display.as'),
+    displayAsNumber: Ember.computed('displayType', function() {
+        return this.get('displayType') === 'number';
+    }),
+    number: null,
 
     chartHeight: Ember.computed.alias('config.display.height'),
 
@@ -79,7 +83,7 @@ export default CollectionWidget.extend({
     chartData: null,
     chartOptions: Ember.computed(
       'displayType',
-      'chartCategories.[]',
+      // 'chartCategories.[]',
       'chartTitle',
       'chartSubtitle',
       'xTitle', 'yTitle',
@@ -87,7 +91,7 @@ export default CollectionWidget.extend({
       'color',
       'operator', function() {
         let chartType = this.get('displayType');
-        let chartCategories = this.get('chartCategories');
+        // let chartCategories = this.get('chartCategories');
         let chartTitle = this.get('chartType') || '';
         let chartSubtitle = this.get('chartSubtitle') || '';
         let chartHeight = this.get('chartHeight');
@@ -114,7 +118,7 @@ export default CollectionWidget.extend({
               text: chartSubtitle
             },
             xAxis: {
-                categories: chartCategories,
+                categories: [],//chartCategories,
                 title: xTitle,
                 labels: {
                     format: xSuffix && `{value}${xSuffix}` || '{value}'
@@ -203,7 +207,6 @@ export default CollectionWidget.extend({
         let store = this.get('store');
 
         let aggregator = this.get('aggregator');
-        console.log('****', aggregator);
         let options = this.get('options');
 
         let promises = Ember.A();
@@ -219,9 +222,11 @@ export default CollectionWidget.extend({
 
         Ember.RSVP.all(promises).then((data) => {
             let results = data[0];
-            if (this.get('singleValueRepresentation')) {
+            if (this.get('displayAsNumber')) {
                 if (results.length) {
-                    this.set('data', results[0].value);
+                    this.set('number', results[0].x);
+                } else {
+                    this.set('number', null);
                 }
 
             } else {
@@ -230,77 +235,99 @@ export default CollectionWidget.extend({
                 //     results.push({label: '_unfilled', value: data[1], selected: true});
                 // }
 
-                let xLabel = this.get('xLabel');
-                let yLabel = this.get('yLabel');
-                let series = this.get('ySeries');
+                // let xLabel = this.get('xLabel');
+                // let yLabel = this.get('yLabel');
+                // let series = this.get('ySeries');
 
                 let displayType = this.get('displayType');
 
-                if (displayType === 'bar') {
-                    xLabel = this.get('yLabel');
-                    yLabel = this.get('xLabel');
-                    series = this.get('xSeries');
-                }
+                // if (displayType === 'bar') {
+                    // xLabel = this.get('yLabel');
+                    // yLabel = this.get('xLabel');
+                    // series = this.get('xSeries');
+                // }
 
-                let chartCategories = results.mapBy(xLabel).uniq();
+                // let chartCategories = results.mapBy(xLabel).uniq();
 
-                let chartData;
-                if (displayType === 'pie') {
-                    let serie = series[0];
-                    chartData = [{
-                        name: serie.title,
-                        data: results.mapBy(serie.as).map((value, index) => {
-                            return {
-                                name: chartCategories[index],
-                                y: value
-                            };
-                        })
-                    }];
-
-                } else if (this.get('aggregator.color')) {
-
-                    chartData = [];
-                    for (let serie of series) {
-                        let colorValues = results.mapBy('color').uniq();
-                        let _data = {};
-
-                        for (let colorValue of colorValues) {
-                            _data[colorValue] = [];
-                        }
-
-                        for (let item of results) {
-                            for (let colorValue of colorValues) {
-                                let val = null;
-                                if (colorValue === item.color) {
-                                    val = item[serie.as];
-                                }
-                                _data[colorValue].push(val);
-                            }
-                        }
-
-                        for (let colorValue of Object.keys(_data)) {
-                            chartData.push({
-                                name: colorValue,
-                                data: _data[colorValue]
-                            });
-                        }
+                let getPointCoordinates = function(item) {
+                    if (displayType === 'bar') {
+                        return [item.y, item.x];
                     }
+                    return [item.x, item.y];
+                };
 
+                let chartData = [];
+
+                if (this.get('aggregator.color')) {
+                    let colorValues = results.mapBy('color').uniq();
+                    for (let colorValue of colorValues) {
+                        let filteredResults = results.filterBy('color', colorValue);
+                        chartData.push({
+                            name: colorValue,
+                            data: filteredResults.map(getPointCoordinates)
+                        });
+                    }
                 } else {
-
-                    chartData = series.map((serie) => {
-                        return {
-                            name: serie.name,
-                            data: results.mapBy(serie.as)
-                        };
-                    });
+                    chartData = [{
+                        name: ' ',
+                        data: results.map(getPointCoordinates)
+                    }];
                 }
 
-                console.log('results', chartData);
+                // if (displayType === 'pie') {
+                //     let serie = series[0];
+                //     chartData = [{
+                //         name: serie.title,
+                //         data: results.mapBy(serie.as).map((value, index) => {
+                //             return {
+                //                 name: chartCategories[index],
+                //                 y: value
+                //             };
+                //         })
+                //     }];
+
+                // } else if (this.get('aggregator.color')) {
+
+                //     chartData = [];
+                //     for (let serie of series) {
+                //         let colorValues = results.mapBy('color').uniq();
+                //         let _data = {};
+
+                //         for (let colorValue of colorValues) {
+                //             _data[colorValue] = [];
+                //         }
+
+                //         for (let item of results) {
+                //             for (let colorValue of colorValues) {
+                //                 let val = null;
+                //                 if (colorValue === item.color) {
+                //                     val = item[serie.as];
+                //                 }
+                //                 _data[colorValue].push(val);
+                //             }
+                //         }
+
+                //         for (let colorValue of Object.keys(_data)) {
+                //             chartData.push({
+                //                 name: colorValue,
+                //                 data: _data[colorValue]
+                //             });
+                //         }
+                //     }
+
+                // } else {
+
+                //     chartData = series.map((serie) => {
+                //         return {
+                //             name: serie.name,
+                //             data: results.mapBy(serie.as)
+                //         };
+                //     });
+                // }
 
                 this.setProperties({
-                    chartData: chartData,
-                    chartCategories: chartCategories
+                    chartData: chartData
+                    // chartCategories: chartCategories
                 });
             }
             this.set('isLoading', false);

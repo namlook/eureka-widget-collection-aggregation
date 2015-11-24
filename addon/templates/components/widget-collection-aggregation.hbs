@@ -6,10 +6,12 @@
     {{#if isLoading}}
         {{partial 'eureka-loading'}}
     {{else}}
-        <div class="panel-body">
-            {{log chartOptions}}
-            {{log chartData}}
-            {{high-charts mode=chartMode content=chartData chartOptions=chartOptions}}
-        </div>
+        {{#if displayAsNumber}}
+            <h1 class="text-center">{{number}}</h1>
+        {{else}}
+            <div class="panel-body">
+                {{high-charts mode=chartMode content=chartData chartOptions=chartOptions}}
+            </div>
+        {{/if}}
     {{/if}}
 </div>

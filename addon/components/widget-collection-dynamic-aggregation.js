@@ -18,13 +18,34 @@ export default CollectionWidget.extend({
     sortReversed: false,
     limit: 200,
 
+    displayColorForm: Ember.computed('chartType', function() {
+        if (['line', 'bar', 'column', 'scatter'].indexOf(this.get('chartType')) > -1) {
+            return true;
+        }
+        this.set('colorProperty', null);
+    }),
+
+    displayYForm: Ember.computed('chartType', function() {
+        return this.get('chartType') !== 'number';
+    }),
+
+    displaySortForm: Ember.computed('chartType', function() {
+        return ['line', 'bar', 'column', 'scatter'].indexOf(this.get('chartType')) > -1;
+    }),
+
+    displayLimitForm: Ember.computed('chartType', function() {
+        return this.get('chartType') !== 'number';
+    }),
+
+
     suggestedCharts: Ember.computed(function() {
         return Ember.A([
             {id: 'line', label: 'line'},
             {id: 'scatter', label: 'scatter'},
             {id: 'bar', label: 'bar'},
             {id: 'column', label: 'column'},
-            {id: 'pie', label: 'pie'}
+            {id: 'pie', label: 'pie'},
+            {id: 'number', label: 'number'}
         ]);
     }),
 
@@ -97,20 +118,23 @@ export default CollectionWidget.extend({
             options: options,
             display: {
                 as: chartType,
-                x: 'x',
-                y: 'y',
+                x: {
+                   as: 'x'
+                   // title: xProperty
+                },
+                y: {
+                    as: 'y'
+                    // title: yProperty
+                },
                 color: 'color'
             }
         };
-
-        console.log('config>>>', config);
 
         this.set('widgetConfig', config);
     },
 
     actions: {
         reload() {
-            console.log('reload');
             this.generateConfig();
         }
     }
