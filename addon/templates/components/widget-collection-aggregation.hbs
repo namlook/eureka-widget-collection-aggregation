@@ -1,0 +1,15 @@
+<div class="panel panel-default">
+    {{#if label}}
+        <div class="panel-heading">{{{label}}}</div>
+    {{/if}}
+
+    {{#if isLoading}}
+        {{partial 'eureka-loading'}}
+    {{else}}
+        <div class="panel-body">
+            {{log chartOptions}}
+            {{log chartData}}
+            {{high-charts mode=chartMode content=chartData chartOptions=chartOptions}}
+        </div>
+    {{/if}}
+</div>

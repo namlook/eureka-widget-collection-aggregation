@@ -1,6 +1,28 @@
 # Eureka-widget-collection-aggregation
 
-This README outlines the details of collaborating on this Ember addon.
+Aggregate collection data and display it via charts. Usage:
+
+    {
+        type: 'collection-aggregation',
+        label: '',
+        aggregation: {
+            label: 'gender.title',
+            avgWeight: {$avg: 'weightMeasurement'}
+        },
+        query: {
+            taxonomy: 'mus-cookii'
+        },
+        options: {
+            sort: 'name'
+        },
+        display: {
+            as: 'column',
+            x: label,
+            y: avgWeight,
+            // groupBy: 'taxonomy‘
+        }
+
+    }
 
 ## Installation
 

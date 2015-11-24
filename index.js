@@ -2,5 +2,9 @@
 'use strict';
 
 module.exports = {
-  name: 'eureka-widget-collection-aggregation'
+    name: 'eureka-widget-collection-aggregation',
+
+    isDevelopingAddon: function() {
+      return true;
+    }
 };

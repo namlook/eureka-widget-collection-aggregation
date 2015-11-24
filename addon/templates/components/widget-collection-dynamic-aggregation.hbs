@@ -1,0 +1,130 @@
+<div class="panel panel-default">
+    {{#if label}}
+        <div class="panel-heading">{{{label}}}</div>
+    {{/if}}
+
+    {{#if isLoading}}
+        {{partial 'eureka-loading'}}
+    {{else}}
+        <div class="panel-body">
+
+            <form class="form">
+            <div class="form-group">
+                <label for="chartType" class="col-sm-2 control-label">
+                    display as
+                </label>
+                <div class="form-group col-sm-10">
+                    {{#ek-selectize
+                        value=chartType
+                        placeholder="chart type"}}
+                        {{#each suggestedCharts as |chart|}}
+                            <option value="{{chart.id}}">
+                                {{chart.label}}
+                            </option>
+                        {{/each}}
+                    {{/ek-selectize}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="xProperty" class="col-sm-2 control-label">
+                    x axis
+                </label>
+                <div class="form-inline col-sm-10">
+                    <div class="form-group">
+                    {{#ek-selectize
+                        value=xOperator
+                        placeholder="aggregation operator"}}
+                        {{#each suggestedOerators as |operator|}}
+                            <option value="{{operator.id}}"> {{operator.label}} </option>
+                        {{/each}}
+                    {{/ek-selectize}}
+                    </div>
+
+                    {{property-autosuggest
+                        id="xProperty"
+                        modelMeta=modelMeta
+                        value=xProperty}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="yProperty" class="col-sm-2 control-label">
+                    y axis
+                </label>
+                <div class="form-inline col-sm-10">
+                    <div class="form-group">
+                    {{#ek-selectize
+                        value=yOperator
+                        placeholder="aggregation operator"}}
+                        {{#each suggestedOerators as |operator|}}
+                            <option value="{{operator.id}}"> {{operator.label}} </option>
+                        {{/each}}
+                    {{/ek-selectize}}
+                    </div>
+
+                    {{property-autosuggest
+                        id="yProperty"
+                        modelMeta=modelMeta
+                        value=yProperty}}
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="colorProperty" class="col-sm-2 control-label">
+                    color
+                </label>
+                <div class="form-inline col-sm-10">
+                    {{property-autosuggest
+                        id="colorProperty"
+                        modelMeta=modelMeta
+                        value=colorProperty}}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="sortReversed" class="col-sm-2 control-label">
+                    sort on
+                </label>
+                <div class="form-group col-sm-10">
+                    <div class="form-inline">
+                        {{#ek-selectize
+                            value=sortByLabel
+                            placeholder="sort on"}}
+                                <option value="x"> x axis </option>
+                                <option value="y"> y axis </option>
+                        {{/ek-selectize}}
+                        {{input
+                            type='checkbox'
+                            id="sortReversed"
+                            checked=sortReversed}}
+                        <label for="sortReversed"> reversed </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="limit" class="col-sm-2 control-label">
+                    limit
+                </label>
+                <div class="form-group col-sm-10">
+                    {{input type='number'
+                        class="form-control"
+                        id="limit"
+                        value=limit}}
+                </div>
+            </div>
+
+            <button class="btn btn-primary" {{action 'reload'}}> submit </button>
+        </form>
+
+            {{#if widgetConfig}}
+                {{widget-collection-aggregation
+                    routeModel=routeModel
+                    config=widgetConfig
+                }}
+            {{/if}}
+        </div>
+    {{/if}}
+</div>
