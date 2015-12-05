@@ -224,7 +224,7 @@ export default CollectionWidget.extend({
             let results = data[0];
             if (this.get('displayAsNumber')) {
                 if (results.length) {
-                    this.set('number', results[0].x);
+                    this.set('number', parseInt(results[0].x, 10));
                 } else {
                     this.set('number', null);
                 }
@@ -250,6 +250,13 @@ export default CollectionWidget.extend({
                 // let chartCategories = results.mapBy(xLabel).uniq();
 
                 let getPointCoordinates = function(item) {
+                    if (typeof item.x === 'boolean') {
+                        item.x = `${item.x}`;
+                    }
+                    if (typeof item.y === 'boolean') {
+                        item.y = `${item.y}`;
+                    }
+
                     if (displayType === 'bar') {
                         return [item.y, item.x];
                     }
@@ -262,6 +269,9 @@ export default CollectionWidget.extend({
                     let colorValues = results.mapBy('color').uniq();
                     for (let colorValue of colorValues) {
                         let filteredResults = results.filterBy('color', colorValue);
+                        if (typeof colorValue === 'boolean') {
+                            colorValue = `${colorValue}`;
+                        }
                         chartData.push({
                             name: colorValue,
                             data: filteredResults.map(getPointCoordinates)
