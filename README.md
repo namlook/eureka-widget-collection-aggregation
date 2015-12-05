@@ -1,6 +1,6 @@
 # Eureka-widget-collection-aggregation
 
-Aggregate collection data and display it via charts. Usage:
+Aggregate Eureka's collection data and display it via charts. Usage:
 
     {
         type: 'collection-aggregation',
